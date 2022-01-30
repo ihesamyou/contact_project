@@ -19,7 +19,7 @@ class Contact(models.Model):
     other = models.CharField(blank=True, null=True, verbose_name='other numbers', max_length=16)
     address = models.CharField(blank=True, null=True, max_length=300)
     emergency_contact = models.BooleanField(default=False, help_text='Call this contact in case of emergency.')
-    notes = models.TextField(blank=True, null=True)
+    notes = models.TextField(blank=True)
 
     def __str__(self):
         return f'{self.first_name} {self.phone_number}'
