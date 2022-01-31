@@ -1,5 +1,3 @@
-from django.db.utils import IntegrityError
-from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -7,11 +5,16 @@ from .serializers import ContactSerializer
 from .models import Contact
 from django.shortcuts import get_object_or_404
 
+
 class ContactViews(APIView):
-    
-    def get(self, request, phone_get=None):
-        if phone_get:
-            contact = get_object_or_404(Contact, phone_number=phone_get)
+    """
+    API view for contact model.
+    Available methods are GET, POST, PUT, DELETE.
+    """
+    # If phone_number is not provided it returns all contacts.
+    def get(self, request, phone_number=None):
+        if phone_number:
+            contact = get_object_or_404(Contact, phone_number=phone_number)
             serializer = ContactSerializer(contact)
             return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
 
@@ -21,22 +24,33 @@ class ContactViews(APIView):
 
 
     def post(self, request):
-        try:
+        serializer = ContactSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
+        else:
+            return Response({"status": "error", "data": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+
+    def put(self, request):
+        contact = Contact.objects.filter(phone_number=request.data['phone_number']).first()
+        if contact:
+            serializer = ContactSerializer(contact, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response({"status": "success", "data": serializer.data})
+            else:
+                return Response({"status": "error", "data": serializer.errors})
+        else:
             serializer = ContactSerializer(data=request.data)
             if serializer.is_valid():
                 serializer.save()
                 return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
             else:
                 return Response({"status": "error", "data": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
-        except IntegrityError:
-            return Response({"status": "error", "data": 'This phone number already exist.'}, status=status.HTTP_400_BAD_REQUEST)
+    
 
-
-    def patch(self, request, phone_patch):
-        contact = get_object_or_404(Contact, phone_number=phone_patch)
-        serializer = ContactSerializer(contact, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response({"status": "success", "data": serializer.data})
-        else:
-            return Response({"status": "error", "data": serializer.errors})
+    def delete(self, request, phone_number=None):
+        contact = get_object_or_404(Contact, phone_number=phone_number)
+        contact.delete()
+        return Response({"status": "success", "data": "Contact Deleted"})
