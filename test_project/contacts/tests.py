@@ -109,8 +109,8 @@ class PutContactsTest(TestCase):
             first_name='Test4444', phone_number='09104445566')
 
     def test_put_existing_contact(self):
-        response = c.put('', {"phone_number": "09104445566", "first_name": "Test0000"}, content_type='application/json')
-        contact = Contact.objects.get(phone_number='09104445566')
+        response = c.put('/09104445566', {"phone_number": "09108887799", "first_name": "Test0000"}, content_type='application/json')
+        contact = Contact.objects.get(phone_number='09108887799')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(contact.first_name, 'Test0000')
 

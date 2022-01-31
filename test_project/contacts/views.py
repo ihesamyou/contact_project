@@ -32,8 +32,8 @@ class ContactViews(APIView):
             return Response({"status": "error", "data": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 
-    def put(self, request):
-        contact = Contact.objects.filter(phone_number=request.data['phone_number']).first()
+    def put(self, request, phone_number=None):
+        contact = Contact.objects.filter(phone_number=phone_number).first()
         if contact:
             serializer = ContactSerializer(contact, data=request.data)
             if serializer.is_valid():

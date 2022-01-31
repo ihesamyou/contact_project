@@ -15,7 +15,7 @@ class Contact(models.Model):
     phone_number = models.CharField(max_length=11, unique=True, verbose_name='Phone', validators=[phone_regex], help_text='Phone number should be like this format: 09135556677')
     home = models.CharField(blank=True, null=True, max_length=16)
     work = models.CharField(blank=True, null=True, max_length=16)
-    email = models.EmailField(unique=True, blank=True, null=True)
+    email = models.EmailField(blank=True, null=True)
     other = models.CharField(blank=True, null=True, verbose_name='other numbers', max_length=16)
     address = models.CharField(blank=True, null=True, max_length=300)
     emergency_contact = models.BooleanField(default=False, help_text='Call this contact in case of emergency.')
